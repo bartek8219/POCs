@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Confluent.Kafka" Version="2.12.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+      <PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MessagingPOC.Abstractions\MessagingPOC.Abstractions.csproj" />
+      <ProjectReference Include="..\MessagingPOC.Kafka\MessagingPOC.Kafka.csproj" />
+      <ProjectReference Include="..\MessagingPOC.RabbitMQ\MessagingPOC.RabbitMQ.csproj" />
+    </ItemGroup>
+
+</Project>

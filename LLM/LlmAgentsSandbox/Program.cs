@@ -12,16 +12,24 @@ public class Program
     public static async Task Main(string[] args)
     {
         // Build configuration
-        var environmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-            ?? "Production";
+        var environmentNameFromEnv = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+        var hasExplicitEnvironment = !string.IsNullOrWhiteSpace(environmentNameFromEnv);
+        var environmentName = environmentNameFromEnv ?? "Production";
 
-        var configuration = new ConfigurationBuilder()
+        var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables()
-            .Build();
+            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+        // Local-friendly fallback: when DOTNET_ENVIRONMENT is not set, allow appsettings.Development.json.
+        if (!hasExplicitEnvironment)
+        {
+            configurationBuilder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+        }
+
+        configurationBuilder.AddEnvironmentVariables();
+        var configuration = configurationBuilder.Build();
 
         // Setup DI container
         var services = new ServiceCollection();

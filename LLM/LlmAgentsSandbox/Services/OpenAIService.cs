@@ -15,6 +15,18 @@ public class OpenAIService : ILlmService
     public OpenAIService(IOptions<OpenAISettings> settings)
     {
         _settings = settings.Value;
+
+        if (string.IsNullOrWhiteSpace(_settings.ApiKey))
+        {
+            throw new InvalidOperationException(
+                "OpenAI:ApiKey is missing. Set it in appsettings.Development.json, environment variable OpenAI__ApiKey, or user secrets.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_settings.Endpoint))
+        {
+            throw new InvalidOperationException(
+                "OpenAI:Endpoint is missing. Set it in appsettings.Development.json or environment variable OpenAI__Endpoint.");
+        }
         
         _client = new ChatClient(
             model: _settings.DeploymentName,

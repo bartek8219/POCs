@@ -1,0 +1,10 @@
+{
+    "profiles": {
+        "LlmAgentsSandbox": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        }
+    }
+}

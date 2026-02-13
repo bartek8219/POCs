@@ -4,6 +4,7 @@ using LlmAgentsSandbox.Services;
 using LlmAgentsSandbox.Tools;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace LlmAgentsSandbox;
 
@@ -11,30 +12,13 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        // Build configuration
-        var environmentNameFromEnv = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
-        var hasExplicitEnvironment = !string.IsNullOrWhiteSpace(environmentNameFromEnv);
-        var environmentName = environmentNameFromEnv ?? "Production";
+        var builder = Host.CreateApplicationBuilder(args);
 
-        var configurationBuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+        builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
-        // Local-friendly fallback: when DOTNET_ENVIRONMENT is not set, allow appsettings.Development.json.
-        if (!hasExplicitEnvironment)
-        {
-            configurationBuilder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-        }
-
-        configurationBuilder.AddEnvironmentVariables();
-        var configuration = configurationBuilder.Build();
-
-        // Setup DI container
-        var services = new ServiceCollection();
-        ConfigureServices(services, configuration);
-        var serviceProvider = services.BuildServiceProvider();
+        ConfigureServices(builder.Services, builder.Configuration);
+        using var host = builder.Build();
+        var serviceProvider = host.Services;
 
         // Run example agents
         Console.WriteLine("=== LLM Agents POC ===\n");
@@ -79,7 +63,7 @@ public class Program
         // services.AddTransient<SummaryAgent>();
     }
 
-    private static async Task RunTruthTellerAgentExample(ServiceProvider serviceProvider)
+    private static async Task RunTruthTellerAgentExample(IServiceProvider serviceProvider)
     {
         Console.WriteLine("--- Truth teller agent example ---");
         

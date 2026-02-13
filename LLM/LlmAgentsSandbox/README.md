@@ -19,7 +19,7 @@ Proof of Concept (POC) agentow LLM w .NET. Aplikacja konsolowa uruchamia przykla
 
 1. Skopiuj plik `appsettings.Development.example.json` do `appsettings.Development.json`.
 2. Ustaw lokalnie `Endpoint` i `ApiKey` w `appsettings.Development.json` lub przez zmienne srodowiskowe.
-3. Ustaw `DOTNET_ENVIRONMENT=Development` przy uruchamianiu lokalnym.
+3. Domyslnie lokalny profil uruchomieniowy (`Properties/launchSettings.json`) ustawia `DOTNET_ENVIRONMENT=Development`.
 
 ## Uruchomienie
 

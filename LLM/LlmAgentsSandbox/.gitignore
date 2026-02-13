@@ -1,0 +1,39 @@
+# Build output
+bin/
+obj/
+
+# User/tooling
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs/temp
+*.log
+logs/
+tmp/
+temp/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Local secrets/config
+.env
+.env.*
+appsettings.Local.json
+secrets.json
+
+# Certificates/keys
+*.pfx
+*.p12
+*.pem
+*.key
+*.jks
+*.kdbx
+id_rsa
+id_ed25519
+
+appsettings.Development.json

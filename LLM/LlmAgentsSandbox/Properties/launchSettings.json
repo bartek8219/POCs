@@ -5,6 +5,14 @@
             "environmentVariables": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        "LlmAgentsSandbox --chat": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "commandLineArgs": "--chat",
+            "environmentVariables": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     }
 }

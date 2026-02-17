@@ -13,5 +13,14 @@ public interface ILlmService
         Func<ChatToolCall, string>? toolCallResolver = null,
         Action<string>? log = null,
         CancellationToken cancellationToken = default);
+
+    Task<string> CreateChatCompletionAsync(
+        IList<ChatMessage> messages,
+        float? temperature = null,
+        IReadOnlyList<ChatTool>? tools = null,
+        ChatToolChoice? toolChoice = null,
+        Func<ChatToolCall, string>? toolCallResolver = null,
+        Action<string>? log = null,
+        CancellationToken cancellationToken = default);
 }
 

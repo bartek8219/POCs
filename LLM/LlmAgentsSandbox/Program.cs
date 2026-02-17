@@ -10,10 +10,14 @@ namespace LlmAgentsSandbox;
 
 public class Program
 {
+    private const ConsoleColor UserMessageColor = ConsoleColor.Cyan;
+
     public static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
 
+        // Load local overrides regardless of DOTNET_ENVIRONMENT value.
+        builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
         builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
         ConfigureServices(builder.Services, builder.Configuration);
@@ -25,7 +29,14 @@ public class Program
 
         try
         {
-            await RunTruthTellerAgentExample(serviceProvider);
+            if (args.Contains("--chat", StringComparer.OrdinalIgnoreCase))
+            {
+                await RunChatSessionAgentExample(serviceProvider);
+            }
+            else
+            {
+                await RunTruthTellerAgentExample(serviceProvider);
+            }
             
             // Dodaj tutaj kolejne przyklady agent�w:
             // await RunTranslationAgentExample(serviceProvider);
@@ -57,6 +68,7 @@ public class Program
 
         // Agents
         services.AddTransient<TruthTellerAgent>();
+        services.AddTransient<ChatSessionAgent>();
         
         // Dodaj tutaj kolejne agenty:
         // services.AddTransient<TranslationAgent>();
@@ -70,6 +82,9 @@ public class Program
         var truthTellerAgent = serviceProvider.GetRequiredService<TruthTellerAgent>();
         Console.WriteLine($"Running: {truthTellerAgent.Name}");
         Console.WriteLine($"Description: {truthTellerAgent.Description}\n");
+        Console.ForegroundColor = UserMessageColor;
+        Console.WriteLine($"[YOU]: {truthTellerAgent.UserPrompt}\n");
+        Console.ResetColor();
 
         var result = await truthTellerAgent.ExecuteAsync();
         
@@ -77,6 +92,17 @@ public class Program
         Console.WriteLine($"[ASSISTANT]: {result}");
         Console.ResetColor();
         Console.WriteLine();
+    }
+
+    private static async Task RunChatSessionAgentExample(IServiceProvider serviceProvider)
+    {
+        Console.WriteLine("--- Chat session agent example ---");
+
+        var chatSessionAgent = serviceProvider.GetRequiredService<ChatSessionAgent>();
+        Console.WriteLine($"Running: {chatSessionAgent.Name}");
+        Console.WriteLine($"Description: {chatSessionAgent.Description}\n");
+
+        await chatSessionAgent.ExecuteAsync();
     }
     
     // Przykladowe metody dla kolejnych agent�w:

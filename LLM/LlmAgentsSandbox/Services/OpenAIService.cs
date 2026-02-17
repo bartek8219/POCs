@@ -19,7 +19,7 @@ public class OpenAIService : ILlmService
         if (string.IsNullOrWhiteSpace(_settings.ApiKey))
         {
             throw new InvalidOperationException(
-                "OpenAI:ApiKey is missing. Set it in appsettings.Development.json, environment variable OpenAI__ApiKey, or user secrets.");
+                "OpenAI:ApiKey is missing. Set it in appsettings.Local.json, appsettings.Development.json, environment variable OpenAI__ApiKey, or user secrets.");
         }
 
         if (string.IsNullOrWhiteSpace(_settings.Endpoint))
@@ -53,6 +53,25 @@ public class OpenAIService : ILlmService
             new UserChatMessage(userMessage)
         };
 
+        return await CreateChatCompletionAsync(
+            messages,
+            temperature,
+            tools,
+            toolChoice,
+            toolCallResolver,
+            log,
+            cancellationToken);
+    }
+
+    public async Task<string> CreateChatCompletionAsync(
+        IList<ChatMessage> messages,
+        float? temperature = null,
+        IReadOnlyList<ChatTool>? tools = null,
+        ChatToolChoice? toolChoice = null,
+        Func<ChatToolCall, string>? toolCallResolver = null,
+        Action<string>? log = null,
+        CancellationToken cancellationToken = default)
+    {
         var options = new ChatCompletionOptions
         {
             Temperature = temperature ?? _settings.DefaultTemperature
@@ -72,8 +91,7 @@ public class OpenAIService : ILlmService
         }
 
         LogIfEnabled(log, "LLM request:");
-        LogIfEnabled(log, $"- System: {systemPrompt}");
-        LogIfEnabled(log, $"- User: {userMessage}");
+        LogIfEnabled(log, $"- Messages: {messages.Count}");
         LogIfEnabled(log, $"- Tools: {(tools == null ? 0 : tools.Count)}");
         LogIfEnabled(log, $"- Tool choice: {(toolChoice == null ? "null" : toolChoice.ToString())}");
 
@@ -105,6 +123,7 @@ public class OpenAIService : ILlmService
         var text = GetFirstTextOrEmpty(completion);
         if (!string.IsNullOrWhiteSpace(text))
         {
+            messages.Add(ChatMessage.CreateAssistantMessage(text));
             return text;
         }
 
@@ -156,4 +175,3 @@ public class OpenAIService : ILlmService
         log?.Invoke(message);
     }
 }
-
